@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Family Tree</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+<h1>Welcome to Family Tree Service</h1>
+<table id="members">
+    <thead>
+    <tr>
+        <th>#ID</th>
+        <th>Name</th>
+        <th>DOB</th>
+        <th>Gender</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for person in people %}
+        <tr>
+            <td><a href="/tree/{{ person.id_number }}" target="_blank">{{ person.id_number }}</a></td>
+            <td> {{ person.name }} </td>
+            <td> {{ person.date_of_birth }} </td>
+            <td> {{ person.sex }} </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
