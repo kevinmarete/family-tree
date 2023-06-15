@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+    <title>Family Tree</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tree.css') }}">
+</head>
+<body>
+<div id="tree"></div>
+<script type="text/javascript" src="{{ url_for('static', filename='plugins/balkan/familytree.js') }}"></script>
+<script type="text/javascript">
+    const chart = new FamilyTree(document.getElementById("tree"), {
+        mouseScroll: FamilyTree.none,
+        siblingSeparation: 120,
+        template: 'john',
+        nodeBinding: {
+            field_0: "name",
+            field_1: "dob",
+        }
+    });
+    chart.load({{tree|tojson}});
+</script>
+</body>
+</html>

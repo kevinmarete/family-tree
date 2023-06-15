@@ -1,3 +1,5 @@
+import json
+
 from src.models.person_model import Person
 from src.models.sex_model import Sex
 from src.utils.list_utils import get_flat_list
@@ -27,6 +29,9 @@ class FamilyService:
 
     def get_mothers(self, member_id: str) -> list[Person]:
         return [parent for parent in self.get_parents(member_id) if parent.sex == Sex.FEMALE.value]
+
+    def get_partners(self, member_id: str) -> list[Person]:
+        return self.get_member(member_id).get_partners()
 
     def get_children(self, member_id: str) -> list[Person]:
         return self.get_member(member_id).get_children()
@@ -81,3 +86,53 @@ class FamilyService:
             ancestors = parents
             return get_flat_list([self.get_ancestors(ancestor.id_number, ancestors) for ancestor in ancestors])
         return ancestors
+
+    def get_relations(self, member_id):
+        return {
+            "GrandParents": [member.name for member in self.get_grand_parents(member_id)],
+            "Parents": [member.name for member in self.get_parents(member_id)],
+            "Siblings": [member.name for member in self.get_siblings(member_id)],
+            "Partners": [member.name for member in self.get_partners(member_id)],
+            "Uncles": [member.name for member in self.get_uncles(member_id)],
+            "Aunts": [member.name for member in self.get_aunts(member_id)],
+            "Cousins": [member.name for member in self.get_cousins(member_id)],
+            "Ancestors": [member.name for member in self.get_ancestors(member_id)]
+        }
+
+    def get_family(self, member_id):
+        member = self.get_member(member_id)
+        unprocessed_members = [member]
+        family = {}
+
+        while unprocessed_members:
+            member = unprocessed_members.pop()
+            if member.id_number in family:
+                continue
+
+            family[member.id_number] = {
+                "id": member.id_number,
+                "name": member.name,
+                "dob": member.date_of_birth,
+                "gender": str(member.sex).lower()
+            }
+
+            fathers = self.get_fathers(member.id_number)
+            mothers = self.get_mothers(member.id_number)
+            partners = self.get_partners(member.id_number)
+            children = self.get_children(member.id_number)
+
+            if fathers:
+                father = next(iter(fathers))
+                family[member.id_number]["fid"] = father.id_number
+                unprocessed_members.append(father)
+            if mothers:
+                mother = next(iter(mothers))
+                family[member.id_number]["mid"] = mother.id_number
+                unprocessed_members.append(mother)
+            if partners:
+                unprocessed_members.extend(partners)
+                family[member.id_number]["pids"] = [partners.id_number for partners in partners]
+            if children:
+                unprocessed_members.extend(children)
+
+        return family
