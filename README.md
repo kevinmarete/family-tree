@@ -12,9 +12,11 @@ Family-Tree is a Family History Graph Application.
 
 Add data to the files listed below:
 
-```/data/people.csv``` for people details
+```/data/people.csv``` for people bio-information
 
-```/data/relations.csv```  for child to parent relationship mapping
+```/data/parent_relations.csv```  for child to parent relationship mapping
+
+```/data/partner_relations.csv```  for person to partner relationship mapping
 
 ### Starting the application
 To run the application locally, run the following command:
